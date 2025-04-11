@@ -1,36 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './region.css';
-
-async function generateResponse(userMessage) {
-    let apiResponse = '';
-
-    try {
-        const response = await fetch(api_url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    role: "user",
-                    parts: [{
-                        text: `Responda com precisão e de maneira detalhada, respondendo apenas ao que for perguntado. Pergunta: ${userMessage}`
-                    }]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        apiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (apiResponse) {
-            const formattedResponse = formatText(apiResponse);
-            setChatHistory(prevHistory => [...prevHistory, { role: 'bot', text: formattedResponse }]);
-        } else {
-            console.error("Erro ao obter resposta da API.");
-        }
-    } catch (e) {
-        console.error("Erro ao chamar a API:", e);
-    }
-}
+import { generateChatCompletion } from './openaiService';
+import { handleTopic } from './functions';
 
 const formatText = (text) => {
     let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^([A-Z][\w\s]+):/gm, '<h3>$1:</h3>').replace(/^- (.*?)(?=\n|$)/gm, '<li>$1</li>').replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
@@ -49,7 +20,6 @@ export default function ChatBot() {
     if (!api_key) {
         console.error("API key is not defined. Please set the VITE_API_KEY environment variable.");
     }
-    const api_url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${api_key}`;
 
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
@@ -64,35 +34,18 @@ export default function ChatBot() {
 
     async function generateResponse(userMessage) {
         setIsLoading(true);
-
         try {
-            const response = await fetch(api_url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        role: "user",
-                        parts: [{
-                            text: `Responda de maneira bem detalhada e completa sobre apenas o que foi perguntado educadamente. Por exemplo: para um cumprimento, responda com algo como "Boa noite! Posso ajudar com alguma informação sobre a região de ${topic}?" ou, para perguntas específicas, responda apenas o que foi perguntado de uma forma mais educada e completa. Responda também somente sobre a região italiana "${topic}" Pergunta: ${userMessage}`
-                        }]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-            const apiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            const apiResponse = await generateChatCompletion(userMessage, topicName);
 
             if (apiResponse) {
                 const formattedResponse = formatText(apiResponse);
-
-                setChatHistory(prevHistory => [...prevHistory, { role: 'bot', text: formattedResponse }]);
+                setChatHistory(prev => [...prev, { role: 'bot', text: formattedResponse }]);
             } else {
-                console.error("Erro ao obter resposta da API.");
+                console.error("Resposta da OpenAI vazia");
             }
         } catch (e) {
-            console.error("Erro ao chamar a API:", e);
+            console.error("Erro ao chamar OpenAI:", e);
         }
-
         setIsLoading(false);
     }
 
@@ -111,89 +64,7 @@ export default function ChatBot() {
         }
     };
 
-    function handleTopic () {
-        if (topic === 'region/umbria') {
-            return 'Umbria'
-        }
-
-        if (topic === 'region/lazio') {
-            return 'Lazio'
-        }
-
-        if (topic === 'region/abruzzo') {
-            return 'Abruzzo'
-        }
-
-        if (topic === 'region/basilicata') {
-            return 'Basilicata'
-        }
-
-        if (topic === 'region/calabria') {
-            return 'Calabria'
-        }
-
-        if (topic === 'region/campania') {
-            return 'Campania'
-        }
-
-        if (topic === 'region/emilia_romagna') {
-            return 'Emilia Romana'
-        }
-
-        if (topic === 'region/friuli-venezia_giulia') {
-            return 'Friuli-Venezia Giulia'
-        }
-
-        if (topic === 'region/Liguria') {
-            return 'Liguria'
-        }
-
-        if (topic === 'region/Lombardia') {
-            return 'Lombardia'
-        }
-
-        if (topic === 'region/Marche') {
-            return 'Marche'
-        }
-
-        if (topic === 'region/Molise') {
-            return 'Molise'
-        }
-
-        if (topic === 'region/Piemonte') {
-            return 'Piemonte'
-        }
-
-        if (topic === 'region/puglia') {
-            return 'Puglia'
-        }
-
-        if (topic === 'region/sardegna') {
-            return 'Sardenha'
-        }
-
-        if (topic === 'region/sicilia') {
-            return 'Sicília'
-        }
-
-        if (topic === 'region/toscana') {
-            return 'Toscana'
-        }
-        
-        if (topic === 'region/trentino-alto_adige') {
-            return 'Trentino-Alto Adige'
-        }
-
-        if (topic === 'region/vale_daosta') {
-            return 'Vale DaOsta'
-        }
-
-        if (topic === 'region/veneto') {
-            return 'Veneto'
-        }
-    }
-
-    const topicName = handleTopic()
+    const topicName = handleTopic(topic);
 
     return (
         <>
