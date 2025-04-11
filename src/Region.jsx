@@ -3,18 +3,6 @@ import './region.css';
 import { generateChatCompletion } from './openaiService';
 import { handleTopic } from './functions';
 
-const formatText = (text) => {
-    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^([A-Z][\w\s]+):/gm, '<h3>$1:</h3>').replace(/^- (.*?)(?=\n|$)/gm, '<li>$1</li>').replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
-
-    formattedText = `<p>${formattedText}</p>`;
-
-    formattedText = formattedText.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
-
-    formattedText = formattedText.replace(/(\s*\.\s*|\.+)/g, '. ').replace(/\,+/g, ', ').replace(/\s+,/g, ',').replace(/\s\s+/g, ' ');
-
-    return formattedText;
-};
-
 export default function ChatBot() {
     const api_key = import.meta.env.VITE_API_KEY;
     if (!api_key) {
@@ -91,7 +79,9 @@ export default function ChatBot() {
                         placeholder="Digite sua mensagem..."
                         aria-valuemin={2}
                     />
-                    <button type="submit">Enviar</button>
+                    <button type="submit">
+                        Enviar
+                    </button>
                 </form>
             </div>
         </>
