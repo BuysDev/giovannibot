@@ -4,7 +4,7 @@ import { generateChatCompletion } from './services/openAiService';
 import { handleTopic } from './functions';
 
 export default function ChatBot() {
-    const api_key = import.meta.env.VITE_API_KEY;
+    const api_key = import.meta.env.VITE_OPENAI_API_KEY;
     if (!api_key) {
         console.error("API key is not defined. Please set the VITE_API_KEY environment variable.");
     }
