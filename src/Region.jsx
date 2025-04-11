@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './region.css';
-import { generateChatCompletion } from './openaiService';
+import { generateChatCompletion } from './services/openAiService';
 import { handleTopic } from './functions';
 
 export default function ChatBot() {
