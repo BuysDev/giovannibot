@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './region.css';
-import { generateChatCompletion } from './services/openAiService';
+import { generateResponse } from './services/geminiService';
 import { handleTopic } from './functions';
 
 export default function ChatBot() {
-    const api_key = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!api_key) {
-        console.error("API key is not defined. Please set the VITE_API_KEY environment variable.");
-    }
+    // A chave da API do Gemini deve ser mantida no backend por segurança.
+    // Não a exponha diretamente no frontend.
+    // const api_key = import.meta.env.VITE_GEMINI_API_KEY;
+    // if (!api_key) {
+    //     console.error("API key is not defined. Please set the VITE_GEMINI_API_KEY environment variable.");
+    // }
 
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
@@ -20,39 +22,27 @@ export default function ChatBot() {
         setTopic(subject);
     }, []);
 
-    async function generateResponse(userMessage) {
-        setIsLoading(true);
-        try {
-            const apiResponse = await generateChatCompletion(userMessage, topicName);
+    const topicName = handleTopic(topic);
 
-            if (apiResponse) {
-                const formattedResponse = formatText(apiResponse);
-                setChatHistory(prev => [...prev, { role: 'bot', text: formattedResponse }]);
-            } else {
-                console.error("Resposta da OpenAI vazia");
-            }
-        } catch (e) {
-            console.error("Erro ao chamar OpenAI:", e);
-        }
-        setIsLoading(false);
-    }
-
-    const formatText = (text) => {
-        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '<br/><br/>');
-        return formattedText;
-    };
-
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (message.trim() !== '') {
-            setChatHistory(prevHistory => [...prevHistory, { role: 'user', text: message }]);
-            generateResponse(message);
-            setMessage('');
+            setIsLoading(true); // Indica que o bot está pensando
+            setChatHistory([...chatHistory, { role: 'user', text: message }]); // Adiciona a mensagem do usuário ao histórico
+            setMessage(''); // Limpa o input
+
+            try {
+                const responseText = await generateResponse(topicName, message);
+                setChatHistory([...chatHistory, { role: 'user', text: message }, { role: 'bot', text: responseText }]); // Adiciona a resposta do bot ao histórico
+            } catch (error) {
+                console.error("Erro ao obter resposta do Gemini:", error);
+                setChatHistory([...chatHistory, { role: 'user', text: message }, { role: 'bot', text: "Desculpe, não consegui responder agora. Tente novamente mais tarde." }]); // Mensagem de erro para o usuário
+            } finally {
+                setIsLoading(false); // Indica que o bot terminou de pensar
+            }
         }
     };
-
-    const topicName = handleTopic(topic);
 
     return (
         <>
@@ -63,7 +53,7 @@ export default function ChatBot() {
                 {chatHistory.map((msg, index) => (
                     <div key={index} className={msg.role === 'user' ? 'user-message' : 'bot-message'}>
                         <strong>{msg.role === 'user' ? 'Você' : 'GiovanniBot'}:</strong>
-                        <div dangerouslySetInnerHTML={{ __html: msg.text }} />
+                        <div>{msg.text}</div> {/* Removi dangerouslySetInnerHTML para segurança, já que a resposta deve ser texto simples */}
                     </div>
                 ))}
                 {isLoading && (
@@ -79,7 +69,7 @@ export default function ChatBot() {
                         placeholder="Digite sua mensagem..."
                         aria-valuemin={2}
                     />
-                    <button type="submit">
+                    <button type="submit" disabled={isLoading}>
                         Enviar
                     </button>
                 </form>
