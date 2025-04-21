@@ -11,12 +11,20 @@ export async function generateResponse(topic, userMessage) {
     ],
   }
 
-  fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.API_KEY}`
-    },
-    body: JSON.stringify(data)
-  });
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.API_KEY}`
+      },
+      body: JSON.stringify(data)
+    });
+
+    const jsonResponse = await response.json();
+    return jsonResponse.choices[0].message.content;
+  } catch (error) {
+    console.error('Error in generateResponse:', error);
+    throw error;
+  }
 }

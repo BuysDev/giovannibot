@@ -19,18 +19,21 @@ export default function ChatBot() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         if (message.trim() !== '') {
             setIsLoading(true);
-            setChatHistory([...chatHistory, { role: 'user', text: message }]);
+            const userMessage = { role: 'user', text: message };
+            setChatHistory(prev => [...prev, userMessage]);
             setMessage('');
-
+    
             try {
                 const responseText = await generateResponse(topicName, message);
-                setChatHistory([...chatHistory, { role: 'user', text: message }, { role: 'bot', text: responseText }]);
+                const botMessage = { role: 'bot', text: responseText };
+                setChatHistory(prev => [...prev, botMessage]);
             } catch (error) {
                 console.error("Erro ao obter resposta do Gemini:", error);
-                setChatHistory([...chatHistory, { role: 'user', text: message }, { role: 'bot', text: "Desculpe, não consegui responder agora. Tente novamente mais tarde." }]);
+                const errorMessage = { role: 'bot', text: "Desculpe, não consegui responder agora. Tente novamente mais tarde." };
+                setChatHistory(prev => [...prev, errorMessage]);
             } finally {
                 setIsLoading(false);
             }
