@@ -31,7 +31,7 @@ export default function ChatBot() {
                 const botMessage = { role: 'bot', text: responseText };
                 setChatHistory(prev => [...prev, botMessage]);
             } catch (error) {
-                console.error("Erro ao obter resposta do Gemini:", error);
+                console.error("Erro ao obter resposta da API:", error);
                 const errorMessage = { role: 'bot', text: "Desculpe, não consegui responder agora. Tente novamente mais tarde." };
                 setChatHistory(prev => [...prev, errorMessage]);
             } finally {

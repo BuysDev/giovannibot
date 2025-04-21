@@ -9,6 +9,8 @@ export async function generateResponse(topic, userMessage) {
         content: prompt
       }
     ],
+    max_tokens: 1000,
+    temperature: 0.7
   }
 
   try {
@@ -16,15 +18,23 @@ export async function generateResponse(topic, userMessage) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.API_KEY}`
+        'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`, // Nome da variável atualizado
+        'HTTP-Referer': 'https://giovannibot.vercel.app', // URL específica
+        'X-Title': 'GiovanniBot',
       },
       body: JSON.stringify(data)
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      throw new Error(`Erro de autenticação: Verifique sua chave API`);
+    }
+
     const jsonResponse = await response.json();
-    return jsonResponse.choices[0].message.content;
+    return jsonResponse.choices[0].message.content; // Retornando o conteúdo específico da resposta
   } catch (error) {
     console.error('Error in generateResponse:', error);
-    throw error;
+    throw new Error('Falha na autenticação com a API. Verifique sua chave API.');
   }
 }
