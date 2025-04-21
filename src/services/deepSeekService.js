@@ -18,7 +18,7 @@ export async function generateResponse(topic, userMessage) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`, // Nome da variável atualizado
+        'Authorization': `Bearer ${import.meta.env.VITE_API_KEY}`, // Nome da variável atualizado
       },
       body: JSON.stringify(data)
     });
