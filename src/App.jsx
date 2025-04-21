@@ -11,7 +11,7 @@ export default function Map() {
         <div class="background">
           <svg xmlns:mapsvg="http://mapsvg.com" xmlns:dc="http://purl.org/dc/elements/1.1/"
             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
-            xmlns="http://www.w3.org/2000/svg" mapsvg:geoViewBox="6.624486 47.092916 18.521301 35.490303"
+            xmlns="http://www.w3.org/2000/svg" mapsvg:geoviewbox="6.624486 47.092916 18.521301 35.490303"
             width="610.30981" height="792.58575">
 
             <path
