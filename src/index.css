@@ -36,17 +36,18 @@ svg {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  min-height: calc(100vh - 100px); /* subtract header height */
+  padding: 20px;
 }
 
 .map {
   display: flex;
   fill: #828282;
   stroke: #272727;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
+  width: 100%;
+  max-width: 1000px; /* limit maximum width */
   height: auto;
+  aspect-ratio: 1 / 1; /* maintain square aspect ratio */
 }
 
 #IT-42,
@@ -89,5 +90,25 @@ svg {
 
   &:hover {
       fill: #828282
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .map {
+    width: 95%;
+  }
+  
+  .background {
+    padding: 15px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .map {
+    width: 100%;
+  }
+  
+  .background {
+    padding: 10px;
   }
 }
