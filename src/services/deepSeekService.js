@@ -19,8 +19,6 @@ export async function generateResponse(topic, userMessage) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`, // Nome da variável atualizado
-        'HTTP-Referer': 'https://giovannibot.vercel.app', // URL específica
-        'X-Title': 'GiovanniBot',
       },
       body: JSON.stringify(data)
     });
