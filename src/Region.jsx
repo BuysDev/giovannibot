@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './region.css';
-import { generateResponse } from './services/geminiService';
+import { generateResponse } from './services/deepSeekService';
 import { handleTopic } from './functions';
 
 export default function ChatBot() {
@@ -60,7 +60,7 @@ export default function ChatBot() {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Digite sua mensagem..."
-                        aria-valuemin={2}
+                        minLength={2}
                     />
                     <button type="submit" disabled={isLoading}>
                         Enviar
