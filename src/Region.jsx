@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './region.css';
-import { generateResponse } from './services/deepSeekService';
+import { generateResponse } from './controllers/DeepSeekController';
 import { handleTopic } from './functions';
 
 export default function ChatBot() {
